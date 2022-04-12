@@ -5,7 +5,7 @@ import pandas as pd
 
 class ContinuousNHANES(IntEnum):
     """
-        Represents the different Datasets of Continuous NHANSE
+        Represents the different Datasets of Continuous NHANES
     """
     First = 1999
     Second = 2001

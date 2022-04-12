@@ -1,5 +1,5 @@
 from jinja2 import UndefinedError
-from nhanse_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL
+from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL
 import pandas as pd
 from typing import Set
 
@@ -25,7 +25,7 @@ def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
 def downloadCodebooks(cd: CodebookDownload) -> Codebook:
     # Throw an exception whenever something fails to download
     """
-    Return all CodeBooks within specified for the NHANSE year
+    Return all CodeBooks within specified for the NHANES year
     """
     res = [downloadCodebook(cd.year, c) for c in cd.codebooks]
 
@@ -35,7 +35,7 @@ def downloadCodebooks(cd: CodebookDownload) -> Codebook:
 def downloadAllCodebooks(c: ContinuousNHANES) -> Codebook:
     # Might have problem here with activity data and getting all codebook names
     """
-    returns dataframe of all codebook data for a nhanse year
+    returns dataframe of all codebook data for a nhanes year
     """
     raise UndefinedError("Not implemented yet")
 
