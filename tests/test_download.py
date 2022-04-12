@@ -1,4 +1,4 @@
-from src import download, types
+from nhanse_dl import download, types
 
 # These are all intergrations tests
 
