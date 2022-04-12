@@ -1,5 +1,5 @@
 import pandas as pd
-from nhanes_dl import types
+from src import types
 
 
 def test_allYears():

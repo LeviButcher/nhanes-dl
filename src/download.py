@@ -1,5 +1,5 @@
 from jinja2 import UndefinedError
-from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL
+from src.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL
 import pandas as pd
 from typing import Set
 
