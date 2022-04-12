@@ -1,0 +1,4 @@
+Run tests - python setup.py pytest
+Compile Lib - python setup.py bdist_wheel
+
+ptw - runs pytest-watch running tests on change
