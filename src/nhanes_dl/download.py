@@ -19,6 +19,7 @@ class CodebookDownload:
 
 def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
     url = codebookURL(year, codebook)
+    print(url)
     return Codebook(pd.read_sas(url, index="SEQN"))
 
 

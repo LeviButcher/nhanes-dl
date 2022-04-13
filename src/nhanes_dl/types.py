@@ -14,7 +14,7 @@ class ContinuousNHANES(IntEnum):
     Fifth = 2007
     Sixth = 2009
     Seventh = 2011
-    Eight = 2013
+    Eighth = 2013
     Ninth = 2015
     Tenth = 2017
     Eleveth = 2019
@@ -59,7 +59,10 @@ def joinCodebooks(codebooks: List[Codebook]) -> Codebook:
 
 
 def appendCodebooks(codebooks: List[Codebook]) -> Codebook:
-    return Codebook(pd.concat(codebooks))
+    # Some codebooks may have repeat columns, have to remove them in order to append codebooks safely
+    nodups = [x.loc[:, ~x.columns.duplicated()] for x in codebooks]
+
+    return Codebook(pd.concat(nodups))
 
 
 def appendMortalities(mortalities: List[Mortality]) -> Mortality:
