@@ -1,30 +1,21 @@
+from urllib.error import HTTPError
 from jinja2 import UndefinedError
-from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL
+from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL, CodebookDownload, DownloadException
 import pandas as pd
 from typing import Set
 
 
-# Might be good to make this into a tuple
-class CodebookDownload:
-    year: ContinuousNHANES
-    codebooks: Set[str]
-
-    def __init__(self, year: ContinuousNHANES, *codebooks: str):
-        self.year = year
-        self.codebooks = set(codebooks)
-
-
-# Every download function could take in a downloader to make testsing easier
-
-
 def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
     url = codebookURL(year, codebook)
-    print(url)
-    return Codebook(pd.read_sas(url, index="SEQN"))
+    try:
+        return Codebook(pd.read_sas(url, index="SEQN"))
+    except HTTPError:
+        raise DownloadException(
+            f"Failed to download {codebook} for {year}\n{url}")
 
 
 def downloadCodebooks(cd: CodebookDownload) -> Codebook:
-    # Throw an exception whenever something fails to download
+    # Should throw an exception whenever something fails to download
     """
     Return all CodeBooks within specified for the NHANES year
     """
@@ -87,10 +78,15 @@ def downloadMortality(year: ContinuousNHANES) -> Mortality:
     """
 
     url = mortalityURL(year)
-    data = pd.read_fwf(url, widths=mortality_widths)
-    data.columns = mortality_colnames
-    return data.assign(SEQN=data.PUBLICID).drop(columns=drop_columns).apply(
-        lambda x: pd.to_numeric(x, errors="coerce")).set_index("SEQN")
+
+    try:
+        data = pd.read_fwf(url, widths=mortality_widths)
+        data.columns = mortality_colnames
+        return data.assign(SEQN=data.PUBLICID).drop(columns=drop_columns).apply(
+            lambda x: pd.to_numeric(x, errors="coerce")).set_index("SEQN")
+    except HTTPError:
+        raise DownloadException(
+            f"Failed to download mortality data for {year}\n{url}")
 
 
 def downloadMortalityForYears(years: Set[ContinuousNHANES]) -> Mortality:

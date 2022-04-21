@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Tuple, List,  NewType, Callable
+from typing import Tuple, List,  NewType, Callable, Set
 import pandas as pd
 
 
@@ -27,17 +27,40 @@ LinkedDataset = NewType('LinkedDataset', pd.DataFrame)
 Downloader = Callable[[str], pd.DataFrame]
 
 
+class Codebook2():
+    name: str
+    repeatsSEQN: bool
+
+
+def codebooks(year: ContinuousNHANES) -> List[str]:
+    """
+    Returns all valid codebooks for a Continuous NHANES year
+    (Only returns codebooks that are safe to join together. i.e not the activity data)
+    """
+    # How Can I make this work?
+
+    # OPTIONS
+    # 1. Hand Type it out :/
+    # 2. Use the scraper data to query csv file and return all
+
+    return [""]
+
+
+commonCodebooks = []
+firstYearCodebooks = []
+
+
 def allSets() -> List[ContinuousNHANES]:
     return [x for x in ContinuousNHANES]
 
 
-def codebookURL(set: ContinuousNHANES, codebookName: str) -> str:
-    (s, e) = getStartEndYear(set)
+def codebookURL(year: ContinuousNHANES, codebookName: str) -> str:
+    (s, e) = getStartEndYear(year)
     return f"https://wwwn.cdc.gov/Nchs/Nhanes/{s}-{e}/{codebookName}.XPT"
 
 
-def mortalityURL(set: ContinuousNHANES) -> str:
-    (s, e) = getStartEndYear(set)
+def mortalityURL(year: ContinuousNHANES) -> str:
+    (s, e) = getStartEndYear(year)
     return f"https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_{s}_{e}_MORT_2015_PUBLIC.dat"
 
 
@@ -74,3 +97,16 @@ def linkCodebookWithMortality(code: Codebook, mort: Mortality) -> Codebook:
     # mortality has a record for every person BUT the codebook does not
     # This is why a outer join is necessary
     return Codebook(code.join(mort, how="outer"))
+
+
+class CodebookDownload:
+    year: ContinuousNHANES
+    codebooks: Set[str]
+
+    def __init__(self, year: ContinuousNHANES, *codebooks: str):
+        self.year = year
+        self.codebooks = set(codebooks)
+
+
+class DownloadException(Exception):
+    pass

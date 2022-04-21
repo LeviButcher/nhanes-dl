@@ -1,3 +1,4 @@
+import pytest
 from nhanes_dl import download, types
 
 # These are all intergrations tests
@@ -126,3 +127,20 @@ def test_complex():
     assert len(res) != 0
     assert res.index.name == "SEQN"
     assert res.shape == (50965, 235)
+
+
+def test_downloadCodebook_ThrowsDownloadException():
+    year = types.ContinuousNHANES.Fifth
+    codebook = "FAKEBOOK"
+    url = types.codebookURL(year, codebook)
+    with pytest.raises(download.DownloadException) as de:
+        download.downloadCodebook(year, codebook)
+    assert de.value.args[0] == f"Failed to download {codebook} for {year}\n{url}"
+
+
+def test_downloadMortality_ThrowsDownloadException():
+    year = types.ContinuousNHANES.Eleveth
+    url = types.mortalityURL(year)
+    with pytest.raises(download.DownloadException) as de:
+        download.downloadMortality(year)
+    assert de.value.args[0] == f"Failed to download mortality data for {year}\n{url}"
