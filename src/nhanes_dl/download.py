@@ -1,8 +1,11 @@
+from typing import Set, List
+import pandas as pd
 from urllib.error import HTTPError
 from jinja2 import UndefinedError
-from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, codebookURL, Codebook, Mortality, joinCodebooks, linkCodebookWithMortality, mortalityURL, CodebookDownload, DownloadException
-import pandas as pd
-from typing import Set
+from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, \
+    codebookURL, Codebook, Mortality, joinCodebooks, \
+    linkCodebookWithMortality, mortalityURL, \
+    CodebookDownload, DownloadException
 
 
 def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
@@ -47,8 +50,8 @@ mortality_colspecs = [(1, 14), (15, 15), (16, 16), (17, 19), (20, 20),
 mortality_widths = [e - (s-1) for s, e in mortality_colspecs]
 
 
-def toUpperCase(l):
-    return list(map(lambda l: l.upper(), l))
+def toUpperCase(xs: List[str]):
+    return list(map(lambda l: l.upper(), xs))
 
 
 mortality_colnames = toUpperCase(["publicid",

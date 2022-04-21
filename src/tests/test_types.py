@@ -24,7 +24,8 @@ def test_codebookURL():
 
 def test_mortalityURL():
     set = types.ContinuousNHANES.First
-    expected = "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_1999_2000_MORT_2015_PUBLIC.dat"
+    expected = \
+        "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_1999_2000_MORT_2015_PUBLIC.dat"
     res = types.mortalityURL(set)
 
     assert res != ""
