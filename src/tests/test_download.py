@@ -103,7 +103,7 @@ def test_downloadCodebooksWithMortalityForYears():
     assert res.index.name == "SEQN"
 
 
-def test_complex():
+def test_downloadCodebooksForYears_complex():
     downloadConfig = {
         download.CodebookDownload(types.ContinuousNHANES.Fourth,
                                   "TCHOL_D", "TRIGLY_D", "HDL_D", "GLU_D", "CDQ_D",
