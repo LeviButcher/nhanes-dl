@@ -1,7 +1,6 @@
 from typing import Set, List
 import pandas as pd
 from urllib.error import HTTPError
-from jinja2 import UndefinedError
 from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, \
     codebookURL, Codebook, Mortality, joinCodebooks, \
     linkCodebookWithMortality, mortalityURL, \
@@ -32,7 +31,7 @@ def downloadAllCodebooks(c: ContinuousNHANES) -> Codebook:
     """
     returns dataframe of all codebook data for a nhanes year
     """
-    raise UndefinedError("Not implemented yet")
+    raise Exception("Not implemented yet")
 
 
 def downloadCodebooksForYears(c: Set[CodebookDownload]) -> Codebook:
