@@ -2,18 +2,32 @@ from typing import Set, List
 import pandas as pd
 from urllib.error import HTTPError
 from nhanes_dl.types import ContinuousNHANES, appendCodebooks, appendMortalities, \
-    codebookURL, Codebook, Mortality, joinCodebooks, \
+    codebookURL, Codebook, Mortality, getAllCodebookDescriptions, joinCodebooks, \
     linkCodebookWithMortality, mortalityURL, \
-    CodebookDownload, DownloadException
+    CodebookDownload, DownloadException, getYearsCodebookDescriptions
 
+
+# Kinda think I should convert the return types to eithers...
+# This would allow for better error handling and more explicit type signatures
+# BUT then I insert functional dependencies into the python library... probably not a good idea
 
 def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
+    """
+    Downloads a NHANSE codebook from the CDC website.
+    Throws a DownloadException if the download fails, doesn't have a SEQN, or repeats SEQN multiple times
+    """
     url = codebookURL(year, codebook)
+    print(year, codebook)
+
     try:
         return Codebook(pd.read_sas(url, index="SEQN"))
     except HTTPError:
         raise DownloadException(
             f"Failed to download {codebook} for {year}\n{url}")
+    except KeyError:
+        raise DownloadException(f"No SEQN index")
+    except Exception:
+        raise DownloadException(f"Repeating SEQN rows")
 
 
 def downloadCodebooks(cd: CodebookDownload) -> Codebook:
@@ -26,11 +40,41 @@ def downloadCodebooks(cd: CodebookDownload) -> Codebook:
     return joinCodebooks(res)
 
 
-def downloadAllCodebooks(c: ContinuousNHANES) -> Codebook:
-    # Might have problem here with activity data and getting all codebook names
+def downloadAllCodebooksForYear(c: ContinuousNHANES) -> Codebook:
     """
     returns dataframe of all codebook data for a nhanes year
     """
+    def handleDownloadCodebook(year: ContinuousNHANES, codebook: str) -> List[Codebook]:
+        try:
+            return [downloadCodebook(year, codebook)]
+        except Exception:
+            return []
+
+    # desc = getYearsCodebookDescriptions(c)
+    # # res = [y for (_, x) in desc.iterrows()
+    # #        for y in handleDownloadCodebook(c, x.dataFile) if not y.empty]
+
+    # # Gotta Change return types to denote failure
+    # # NOTE: DATA IS TO LARGE TO MERGE TOGETHER
+    # res = None
+    # for (_, x) in desc.iterrows():
+    #     y = handleDownloadCodebook(c, x.dataFile)
+    #     if res is None and len(y) != 0:
+    #         res = y[0]
+    #     elif res is not None and len(y) != 0:
+    #         code = y[0]
+    #         print(f"res: {res.shape}")
+    #         print(f"code: {code.shape}")
+
+    #         allCols = res.columns.append(code.columns)
+    #         cols = allCols.duplicated()[len(res.columns):]
+    #         noDups = code.loc[:, ~cols]
+    #         res = res.join(noDups, how="outer")
+
+    return Codebook(pd.DataFrame())
+
+
+def downloadAllCodebooks() -> Codebook:
     raise Exception("Not implemented yet")
 
 

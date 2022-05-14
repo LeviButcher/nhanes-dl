@@ -144,3 +144,20 @@ def test_downloadMortality_ThrowsDownloadException():
     with pytest.raises(download.DownloadException) as de:
         download.downloadMortality(year)
     assert de.value.args[0] == f"Failed to download mortality data for {year}\n{url}"
+
+
+# def test_downloadAllCodebooksForYear():
+#     res = download.downloadAllCodebooksForYear(types.ContinuousNHANES.First)
+#     assert len(res) != 0
+
+
+# def test_downloadAllCodebooks():
+#     res = download.downloadAllCodebooks()
+#     assert len(res) != 0
+
+
+# def test_downloadCodebook_HasRepeatingSEQN_ThrowsException():
+#     with pytest.raises(download.DownloadException) as de:
+#         res = download.downloadCodebook(types.ContinuousNHANES.First, "LAB21")
+#         print(res)
+#     assert de.value.args[0] == "Repeating SEQN rows"

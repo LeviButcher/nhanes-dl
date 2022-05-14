@@ -25,11 +25,7 @@ Codebook = NewType('Codebook', pd.DataFrame)
 Mortality = NewType('Mortality', pd.DataFrame)
 LinkedDataset = NewType('LinkedDataset', pd.DataFrame)
 Downloader = Callable[[str], pd.DataFrame]
-
-
-class Codebook2():
-    name: str
-    repeatsSEQN: bool
+CodebookDescription = NewType('CodebookDescription', pd.DataFrame)
 
 
 def codebooks(year: ContinuousNHANES) -> List[str]:
@@ -61,7 +57,7 @@ def codebookURL(year: ContinuousNHANES, codebookName: str) -> str:
 
 def mortalityURL(year: ContinuousNHANES) -> str:
     (s, e) = getStartEndYear(year)
-    return f"https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_{s}_{e}_MORT_2015_PUBLIC.dat"
+    return f"https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_{s}_{e}_MORT_2019_PUBLIC.dat"
 
 
 def allYears() -> List[Tuple[int, int]]:
@@ -78,7 +74,17 @@ def getCodebookNames(c: ContinuousNHANES) -> List[str]:
 
 
 def joinCodebooks(codebooks: List[Codebook]) -> Codebook:
-    return Codebook(pd.concat(codebooks, axis=1))
+    # Can overrun memory when large dataframes are passed in
+    # If you use join directly with huge lists
+    x = codebooks[0]
+    for y in codebooks[1:]:
+        # Have to remove any columns that may be repeated in y
+        allCols = x.columns.append(y.columns)
+        cols = allCols.duplicated()[len(x.columns):]
+        noDups = y.loc[:, ~cols]
+        x = x.join(noDups, how="outer")
+
+    return x  # type: ignore
 
 
 def appendCodebooks(codebooks: List[Codebook]) -> Codebook:
@@ -93,7 +99,6 @@ def appendMortalities(mortalities: List[Mortality]) -> Mortality:
 
 
 def linkCodebookWithMortality(code: Codebook, mort: Mortality) -> Codebook:
-
     # mortality has a record for every person BUT the codebook does not
     # This is why a outer join is necessary
     return Codebook(code.join(mort, how="outer"))
@@ -110,3 +115,19 @@ class CodebookDownload:
 
 class DownloadException(Exception):
     pass
+
+
+def getYearsCodebookDescriptions(year: ContinuousNHANES) -> CodebookDescription:
+    desc = getAllCodebookDescriptions()
+    (s, e) = getStartEndYear(year)
+    inYear = (desc.startYear == s) & (desc.endYear == e)
+    return CodebookDescription(desc.loc[inYear, :])
+
+
+def getAllCodebookDescriptions() -> CodebookDescription:
+    url = "https://raw.githubusercontent.com/LeviButcher/nhanes-scraper/master/results/nhanes_codebooks.csv"
+    # Removes any duplicate rows, if any exist
+    res = pd.read_csv(url).drop_duplicates(
+        subset=["startYear", "endYear", "dataFile"])
+
+    return CodebookDescription(res)
