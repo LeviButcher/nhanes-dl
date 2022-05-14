@@ -25,9 +25,9 @@ def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
         raise DownloadException(
             f"Failed to download {codebook} for {year}\n{url}")
     except KeyError:
-        raise DownloadException(f"No SEQN index")
+        raise DownloadException(f"No SEQN index - {url}")
     except Exception:
-        raise DownloadException(f"Repeating SEQN rows")
+        raise DownloadException(f"Repeating SEQN rows - {url}")
 
 
 def downloadCodebooks(cd: CodebookDownload) -> Codebook:
