@@ -7,9 +7,9 @@ class ContinuousNHANES(IntEnum):
     """
         Represents the different Datasets of Continuous NHANES
     """
-    First = 1999
-    Second = 2001
-    Third = 2003
+    # First = 1999
+    # Second = 2001
+    # Third = 2003
     Fourth = 2005
     Fifth = 2007
     Sixth = 2009
@@ -17,8 +17,8 @@ class ContinuousNHANES(IntEnum):
     Eighth = 2013
     Ninth = 2015
     Tenth = 2017
-    Eleveth = 2019
-    Twelfth = 2021
+    # Eleventh = 2019
+    # Twelfth = 2021
 
 
 Codebook = NewType('Codebook', pd.DataFrame)
@@ -46,8 +46,8 @@ commonCodebooks = []
 firstYearCodebooks = []
 
 
-def allSets() -> List[ContinuousNHANES]:
-    return [x for x in ContinuousNHANES]
+def allContinuousNHANES() -> Set[ContinuousNHANES]:
+    return set([x for x in ContinuousNHANES])
 
 
 def codebookURL(year: ContinuousNHANES, codebookName: str) -> str:
@@ -61,7 +61,7 @@ def mortalityURL(year: ContinuousNHANES) -> str:
 
 
 def allYears() -> List[Tuple[int, int]]:
-    return [getStartEndYear(x) for x in allSets()]
+    return [getStartEndYear(x) for x in allContinuousNHANES()]
 
 
 def getStartEndYear(c: ContinuousNHANES) -> Tuple[int, int]:
@@ -76,15 +76,17 @@ def getCodebookNames(c: ContinuousNHANES) -> List[str]:
 def joinCodebooks(codebooks: List[Codebook]) -> Codebook:
     # Can overrun memory when large dataframes are passed in
     # If you use join directly with huge lists
-    x = codebooks[0]
-    for y in codebooks[1:]:
-        # Have to remove any columns that may be repeated in y
-        allCols = x.columns.append(y.columns)
-        cols = allCols.duplicated()[len(x.columns):]
-        noDups = y.loc[:, ~cols]
-        x = x.join(noDups, how="outer")
 
-    return x  # type: ignore
+    return Codebook(pd.concat(codebooks, axis=1))
+    # x = codebooks[0]
+    # for y in codebooks[1:]:
+    #     # Have to remove any columns that may be repeated in y
+    #     allCols = x.columns.append(y.columns)
+    #     cols = allCols.duplicated()[len(x.columns):]
+    #     noDups = y.loc[:, ~cols]
+    #     x = x.join(noDups, how="outer")
+
+    # return x  # type: ignore
 
 
 def appendCodebooks(codebooks: List[Codebook]) -> Codebook:

@@ -13,7 +13,7 @@ def test_allYears():
 
 
 def test_codebookURL():
-    set = types.ContinuousNHANES.First
+    set = types.ContinuousNHANES.Fourth
     codebook = "LIB"
     expected = "https://wwwn.cdc.gov/Nchs/Nhanes/1999-2000/LIB.XPT"
     res = types.codebookURL(set, codebook)
@@ -23,7 +23,7 @@ def test_codebookURL():
 
 
 def test_mortalityURL():
-    set = types.ContinuousNHANES.First
+    set = types.ContinuousNHANES.Fourth
     expected = \
         "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_1999_2000_MORT_2019_PUBLIC.dat"
     res = types.mortalityURL(set)
@@ -73,7 +73,7 @@ def test_appendCodebooks():
 def test_getYearsCodebookDescriptions():
     # 'codebookType', 'startYear', 'endYear', 'name', 'docFile',
     # 'docFileLink', 'dataFile', 'dataFileLink', 'published'
-    year = types.ContinuousNHANES.First
+    year = types.ContinuousNHANES.Fourth
     res = types.getYearsCodebookDescriptions(year)
     (s, e) = types.getStartEndYear(year)
     print(res.columns)

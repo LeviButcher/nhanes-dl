@@ -5,7 +5,7 @@ from nhanes_dl import download, types
 
 
 def test_downloadCodebook():
-    res = download.downloadCodebook(types.ContinuousNHANES.Third, "DEMO_C")
+    res = download.downloadCodebook(types.ContinuousNHANES.Fourth, "DEMO_D")
 
     assert len(res) != 0
     # unlikely that that nhanes changes underlying data
@@ -15,7 +15,7 @@ def test_downloadCodebook():
 
 def test_downloadCodebooks():
     conf = download.CodebookDownload(
-        types.ContinuousNHANES.Third, "DEMO_C", "L16_C")
+        types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D")
 
     res = download.downloadCodebooks(conf)
 
@@ -26,7 +26,7 @@ def test_downloadCodebooks():
 
 def test_downloadCodebooks_morethenfive():
     conf = download.CodebookDownload(
-        types.ContinuousNHANES.Third, "DEMO_C", "L16_C")
+        types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D")
 
     res = download.downloadCodebooks(conf)
 
@@ -38,7 +38,7 @@ def test_downloadCodebooks_morethenfive():
 def test_downloadCodebooksForYears():
     confs = {
         download.CodebookDownload(
-            types.ContinuousNHANES.Third, "DEMO_C", "L16_C"),
+            types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D"),
         download.CodebookDownload(
             types.ContinuousNHANES.Fourth, "DEMO_D", "BMX_D")
     }
@@ -50,7 +50,7 @@ def test_downloadCodebooksForYears():
 
 
 def test_downloadMortality():
-    conf = types.ContinuousNHANES.Third
+    conf = types.ContinuousNHANES.Fourth
     res = download.downloadMortality(conf)
     assert len(res) != 0
     assert res.shape == (10121, 7)
@@ -59,7 +59,7 @@ def test_downloadMortality():
 
 def test_downloadMortalities():
     confs = {
-        types.ContinuousNHANES.Third,
+        types.ContinuousNHANES.Fourth,
         types.ContinuousNHANES.Fourth
     }
     res = download.downloadMortalityForYears(confs)
@@ -69,8 +69,8 @@ def test_downloadMortalities():
 
 
 def test_downloadCodebookWithMortality():
-    conf = types.ContinuousNHANES.Third
-    res = download.downloadCodebookWithMortality(conf, "DEMO_C")
+    conf = types.ContinuousNHANES.Fourth
+    res = download.downloadCodebookWithMortality(conf, "DEMO_D")
 
     assert len(res) != 0
     assert res.shape == (10122, 50)
@@ -79,7 +79,7 @@ def test_downloadCodebookWithMortality():
 
 def test_downloadCodebooksWithMortality():
     conf = download.CodebookDownload(
-        types.ContinuousNHANES.Third, "DEMO_C", "L16_C")
+        types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D")
 
     res = download.downloadCodebooksWithMortality(conf)
 
@@ -91,7 +91,7 @@ def test_downloadCodebooksWithMortality():
 def test_downloadCodebooksWithMortalityForYears():
     confs = {
         download.CodebookDownload(
-            types.ContinuousNHANES.Third, "DEMO_C", "L16_C"),
+            types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D"),
         download.CodebookDownload(
             types.ContinuousNHANES.Fourth, "DEMO_D", "BMX_D")
     }
@@ -139,25 +139,32 @@ def test_downloadCodebook_ThrowsDownloadException():
 
 
 def test_downloadMortality_ThrowsDownloadException():
-    year = types.ContinuousNHANES.Eleveth
+    year = types.ContinuousNHANES.Tenth
     url = types.mortalityURL(year)
     with pytest.raises(download.DownloadException) as de:
         download.downloadMortality(year)
     assert de.value.args[0] == f"Failed to download mortality data for {year}\n{url}"
 
 
-# def test_downloadAllCodebooksForYear():
-#     res = download.downloadAllCodebooksForYear(types.ContinuousNHANES.First)
+def test_downloadAllCodebooksForYear():
+    res = download.downloadAllCodebooksForYear(types.ContinuousNHANES.Fourth)
+    print(res)
+    print(res.index.duplicated())
+    assert len(res) != 0
+
+
+def test_downloadAllCodebooks():
+    res = download.downloadAllCodebooks()
+    print(res.shape)
+    assert len(res) != 0
+
+
+def test_downloadAllCodebooksWithMortalityForYears():
+    res = download.downloadAllCodebooksWithMortalityForYears(
+        types.allContinuousNHANES())
+    print(res)
+    assert len(res) != 0
+
+# def test_custom():
+#     res = download.downloadAllCodebooksForYear(types.ContinuousNHANES.Tenth)
 #     assert len(res) != 0
-
-
-# def test_downloadAllCodebooks():
-#     res = download.downloadAllCodebooks()
-#     assert len(res) != 0
-
-
-# def test_downloadCodebook_HasRepeatingSEQN_ThrowsException():
-#     with pytest.raises(download.DownloadException) as de:
-#         res = download.downloadCodebook(types.ContinuousNHANES.First, "LAB21")
-#         print(res)
-#     assert de.value.args[0] == "Repeating SEQN rows"
