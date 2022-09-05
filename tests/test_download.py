@@ -1,105 +1,103 @@
 import pytest
 from nhanes_dl import download, types
 
-# These are all intergrations tests
+# These are all integrations tests
 
 
-def test_downloadCodebook():
+def test_downloadCodebook_simple():
     res = download.downloadCodebook(types.ContinuousNHANES.Fourth, "DEMO_D")
-
     assert len(res) != 0
-    # unlikely that that nhanes changes underlying data
-    assert res.shape == (10122, 43)
+    # unlikely that that nhanes changes underlying data (But if so count should only go up)
+    assert res.shape == (10348, 42)
     assert res.index.name == "SEQN"
 
 
-def test_downloadCodebooks():
+def test_downloadCodebooks_simple():
     conf = download.CodebookDownload(
-        types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D")
+        types.ContinuousNHANES.Fourth, "DEMO_D", "ACQ_D")
+    res = download.downloadCodebooks(conf)
+
+    assert len(res) != 0
+    assert res.shape == (10348, 46)
+    assert res.index.name == "SEQN"
+
+
+def test_downloadCodebooks_moreThenFive():
+    conf = download.CodebookDownload(
+        types.ContinuousNHANES.Fourth, "DEMO_D", "ACQ_D")
 
     res = download.downloadCodebooks(conf)
 
     assert len(res) != 0
-    assert res.shape == (10122, 47)
+    assert res.shape == (10348, 46)
     assert res.index.name == "SEQN"
 
 
-def test_downloadCodebooks_morethenfive():
-    conf = download.CodebookDownload(
-        types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D")
-
-    res = download.downloadCodebooks(conf)
-
-    assert len(res) != 0
-    assert res.shape == (10122, 47)
-    assert res.index.name == "SEQN"
-
-
-def test_downloadCodebooksForYears():
+def test_downloadCodebooksForYears_simple():
     confs = {
         download.CodebookDownload(
-            types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D"),
+            types.ContinuousNHANES.Fourth, "DEMO_D", "ACQ_D"),
         download.CodebookDownload(
-            types.ContinuousNHANES.Fourth, "DEMO_D", "BMX_D")
+            types.ContinuousNHANES.Fifth, "DEMO_E", "ACQ_E")
     }
     res = download.downloadCodebooksForYears(confs)
 
     assert len(res) != 0
-    assert res.shape == (20470, 74)
+    assert res.shape == (20497, 50)
     assert res.index.name == "SEQN"
 
 
-def test_downloadMortality():
+def test_downloadMortality_simple():
     conf = types.ContinuousNHANES.Fourth
     res = download.downloadMortality(conf)
     assert len(res) != 0
-    assert res.shape == (10121, 7)
+    assert res.shape == (10347, 7)
     assert res.index.name == "SEQN"
 
 
-def test_downloadMortalities():
+def test_downloadMortalities_simple():
     confs = {
         types.ContinuousNHANES.Fourth,
-        types.ContinuousNHANES.Fourth
+        types.ContinuousNHANES.Fifth
     }
     res = download.downloadMortalityForYears(confs)
 
     assert len(res) != 0
-    assert res.shape == (20468, 7)
+    assert res.shape == (20495, 7)
 
 
-def test_downloadCodebookWithMortality():
+def test_downloadCodebookWithMortality_simple():
     conf = types.ContinuousNHANES.Fourth
     res = download.downloadCodebookWithMortality(conf, "DEMO_D")
 
     assert len(res) != 0
-    assert res.shape == (10122, 50)
+    assert res.shape == (10348, 49)
     assert res.index.name == "SEQN"
 
 
-def test_downloadCodebooksWithMortality():
+def test_downloadCodebooksWithMortality_simple():
     conf = download.CodebookDownload(
-        types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D")
+        types.ContinuousNHANES.Fourth, "DEMO_D", "ACQ_D")
 
     res = download.downloadCodebooksWithMortality(conf)
 
     assert len(res) != 0
-    assert res.shape == (10122, 54)
+    assert res.shape == (10348, 53)
     assert res.index.name == "SEQN"
 
 
-def test_downloadCodebooksWithMortalityForYears():
+def test_downloadCodebooksWithMortalityForYears_simple():
     confs = {
         download.CodebookDownload(
-            types.ContinuousNHANES.Fourth, "DEMO_D", "L16_D"),
+            types.ContinuousNHANES.Fourth, "DEMO_D", "ACQ_D"),
         download.CodebookDownload(
-            types.ContinuousNHANES.Fourth, "DEMO_D", "BMX_D")
+            types.ContinuousNHANES.Fifth, "DEMO_E", "ACQ_E")
     }
 
     res = download.downloadCodebooksWithMortalityForYears(confs)
 
     assert len(res) != 0
-    assert res.shape == (20470, 81)
+    assert res.shape == (20497, 57)
     assert res.index.name == "SEQN"
 
 
@@ -148,23 +146,23 @@ def test_downloadMortality_ThrowsDownloadException():
 
 def test_downloadAllCodebooksForYear():
     res = download.downloadAllCodebooksForYear(types.ContinuousNHANES.Fourth)
-    print(res)
-    print(res.index.duplicated())
+
     assert len(res) != 0
 
 
 def test_downloadAllCodebooks():
     res = download.downloadAllCodebooks()
-    print(res.shape)
+
     assert len(res) != 0
 
 
 def test_downloadAllCodebooksWithMortalityForYears():
     res = download.downloadAllCodebooksWithMortalityForYears(
         types.allContinuousNHANES())
-    print(res)
+
     assert len(res) != 0
 
+
 # def test_custom():
-#     res = download.downloadAllCodebooksForYear(types.ContinuousNHANES.Tenth)
+#     res = download.downloadCodebook(types.ContinuousNHANES.Seventh, "PAXMIN_G")
 #     assert len(res) != 0

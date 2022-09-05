@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Tuple, List,  NewType, Callable, Set
+from typing import Tuple, List, NewType, Callable, Set
 import pandas as pd
 
 
@@ -52,7 +52,7 @@ def allContinuousNHANES() -> Set[ContinuousNHANES]:
 
 def codebookURL(year: ContinuousNHANES, codebookName: str) -> str:
     (s, e) = getStartEndYear(year)
-    return f"https://wwwn.cdc.gov/Nchs/Nhanes/{s}-{e}/{codebookName}.XPT"
+    return f"https://wwwn.cdc.gov/Nchs/NHANES/{s}-{e}/{codebookName}.XPT"
 
 
 def mortalityURL(year: ContinuousNHANES) -> str:
@@ -74,26 +74,14 @@ def getCodebookNames(c: ContinuousNHANES) -> List[str]:
 
 
 def joinCodebooks(codebooks: List[Codebook]) -> Codebook:
-    # Can overrun memory when large dataframes are passed in
-    # If you use join directly with huge lists
-
     return Codebook(pd.concat(codebooks, axis=1))
-    # x = codebooks[0]
-    # for y in codebooks[1:]:
-    #     # Have to remove any columns that may be repeated in y
-    #     allCols = x.columns.append(y.columns)
-    #     cols = allCols.duplicated()[len(x.columns):]
-    #     noDups = y.loc[:, ~cols]
-    #     x = x.join(noDups, how="outer")
-
-    # return x  # type: ignore
 
 
 def appendCodebooks(codebooks: List[Codebook]) -> Codebook:
     # Some codebooks may have repeat columns, have to remove them in order to append codebooks safely
-    nodups = [x.loc[:, ~x.columns.duplicated()] for x in codebooks]
+    noDuplicates = [x.loc[:, ~x.columns.duplicated()] for x in codebooks]
 
-    return Codebook(pd.concat(nodups))
+    return Codebook(pd.concat(noDuplicates))
 
 
 def appendMortalities(mortalities: List[Mortality]) -> Mortality:
@@ -103,6 +91,8 @@ def appendMortalities(mortalities: List[Mortality]) -> Mortality:
 def linkCodebookWithMortality(code: Codebook, mort: Mortality) -> Codebook:
     # mortality has a record for every person BUT the codebook does not
     # This is why a outer join is necessary
+    # code = code.set_index("SEQN")
+    # mort = mort.set_index("SEQN")
     return Codebook(code.join(mort, how="outer"))
 
 

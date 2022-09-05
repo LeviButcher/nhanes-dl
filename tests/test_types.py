@@ -4,19 +4,18 @@ from nhanes_dl import types
 
 def test_allYears():
     res = types.allYears()
-    expected = [(1999, 2000), (2001, 2002), (2003, 2004),
-                (2005, 2006), (2007, 2008), (2009, 2010),
-                (2011, 2012), (2013, 2014), (2015, 2016),
-                (2017, 2018), (2019, 2020), (2021, 2022)]
+    expected = {(2005, 2006), (2007, 2008), (2009, 2010),
+                (2011, 2012), (2013, 2014), (2015, 2016), (2017, 2018)}
 
-    assert res == expected
+    assert len(res) == len(expected)
+    assert all([year in expected for year in res])
 
 
 def test_codebookURL():
-    set = types.ContinuousNHANES.Fourth
+    year = types.ContinuousNHANES.Fourth
     codebook = "LIB"
-    expected = "https://wwwn.cdc.gov/Nchs/Nhanes/1999-2000/LIB.XPT"
-    res = types.codebookURL(set, codebook)
+    expected = "https://wwwn.cdc.gov/Nchs/NHANES/2005-2006/LIB.XPT"
+    res = types.codebookURL(year, codebook)
 
     assert res != ""
     assert expected == res
@@ -25,7 +24,7 @@ def test_codebookURL():
 def test_mortalityURL():
     set = types.ContinuousNHANES.Fourth
     expected = \
-        "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_1999_2000_MORT_2019_PUBLIC.dat"
+        "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/datalinkage/linked_mortality/NHANES_2005_2006_MORT_2019_PUBLIC.dat"
     res = types.mortalityURL(set)
 
     assert res != ""
@@ -79,4 +78,4 @@ def test_getYearsCodebookDescriptions():
     print(res.columns)
     assert len(res) != 0
     assert all(res.startYear == s)
-    assert res.shape == (111, 9)
+    assert res.shape == (136, 9)
