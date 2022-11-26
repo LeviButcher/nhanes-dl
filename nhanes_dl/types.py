@@ -97,9 +97,6 @@ def linkCodebookWithMortality(code: Codebook, mort: Mortality) -> Codebook:
 
 
 class CodebookDownload:
-    year: ContinuousNHANES
-    codebooks: Set[str]
-
     def __init__(self, year: ContinuousNHANES, *codebooks: str):
         self.year = year
         self.codebooks = set(codebooks)
