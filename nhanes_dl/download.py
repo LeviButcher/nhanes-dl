@@ -41,7 +41,7 @@ def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
     Downloads a NHANES codebook from the CDC website.
     Throws a DownloadException if the download fails, doesn't have a SEQN, or repeats SEQN multiple times
     """
-    ignoreCodebooks = ["PAXMIN"]
+    ignoreCodebooks = ["PAXMIN", "RDC", "PAXRAW_D", "PAXRAW_C"]
 
     url = codebookURL(year, codebook)
     print(year, codebook)
@@ -65,6 +65,8 @@ def downloadCodebook(year: ContinuousNHANES, codebook: str) -> Codebook:
         raise DownloadException(f"No SEQN index - {url}")
     except OverflowError:
         raise DownloadException(f"A value is over maximum size")
+    except ValueError:
+        raise DownloadException(f"Was not a valid csv file - {url}")
 
 
 def downloadCodebookWithRetry(year, codebook):
